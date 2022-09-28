@@ -1,0 +1,58 @@
+@import url(/src/styles/color-variables.scss);
+
+.deel-AutoComplete {
+  position: relative;
+  width: auto;
+  display: inline-block;
+
+  ul {
+    max-height: 180px;
+    min-width: auto;
+    width: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+    margin: 0;
+    border-top: 0;
+    background: white;
+    z-index: 1000;
+    list-style: none;
+    padding: 4px 0;
+    border: 1px solid #c4c4c4;
+    border-radius: 4px;
+    font-size: 0.75rem;
+
+    position: absolute;
+    display: block;
+
+    margin-top: 6px;
+
+    & > li {
+      padding: 8px 16px;
+      user-select: none;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      word-wrap: break-word;
+      overflow: hidden;
+
+      &[data-hover="true"][data-selected="false"] {
+        background: $hoverDefault;
+      }
+
+      &[data-hover="false"][data-selected="true"],
+      &[data-hover="true"][data-selected="true"] {
+        background: $underPrimary;
+      }
+    }
+
+    & > li[data-nooption] {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: $defaultStroke;
+    }
+
+    &:focus-visible {
+      outline: "none";
+    }
+  }
+}
