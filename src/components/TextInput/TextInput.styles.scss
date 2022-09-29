@@ -1,4 +1,5 @@
 .deel-TextInput {
+  position: relative;
   border: 1px solid #c4c4c4;
   border-radius: 4px;
 
@@ -49,5 +50,8 @@
 
   .deel-spinner {
     fill: #c4c4c4;
+
+    position: absolute;
+    right: 12px;
   }
 }
