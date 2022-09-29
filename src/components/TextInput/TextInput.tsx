@@ -42,11 +42,7 @@ export const TextInput = React.forwardRef(function TextInput(
   ref?: React.Ref<HTMLInputElement>
 ) {
   return (
-    <InputAffix
-      className={className}
-      isLoading={isLoading}
-      disabled={disabled}
-    >
+    <InputAffix className={className} isLoading={isLoading} disabled={disabled}>
       <input
         aria-required={rest.required}
         aria-disabled={disabled}

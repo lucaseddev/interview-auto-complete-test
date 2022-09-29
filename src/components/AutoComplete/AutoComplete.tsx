@@ -58,7 +58,7 @@ export const AutoComplete: React.FC<AutoCompleteProps> = ({
           setIsLoading(false);
         });
     },
-    100,
+    150,
     [inputText]
   );
 
