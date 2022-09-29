@@ -1,12 +1,16 @@
 import { IMovie, IMoviesResponse, IMoviesSearchResponse } from "app/interfaces";
 import { getMovies } from "app/service";
+import { removeDuplicates } from "utils";
 
 const moviesResponseCache: IMoviesResponse[] = [];
 
-const filterMovies = (input: string, list?: IMoviesResponse[]) =>
-  list?.filter((item) =>
+const filterMovies = (input: string, list?: IMoviesResponse[]) => {
+  const filtered = list?.filter((item) =>
     item.Title.toLowerCase().includes(input.toLowerCase())
-  ) || [];
+  ) || []
+
+  return removeDuplicates(filtered, (item) => item.Title)
+};
 
 const extractMovies = (list: IMoviesResponse[]) =>
   list.map((movies) => ({ label: movies.Title }));
