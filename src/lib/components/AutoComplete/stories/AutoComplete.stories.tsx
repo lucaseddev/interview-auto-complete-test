@@ -6,6 +6,8 @@ import {
   AutoCompleteProps,
 } from "../AutoComplete";
 
+import { remoteSearchMovies } from '../../../../app/usecases'
+
 export default {
   title: "Components/Auto-Complete",
   component: AutoCompleteComponent,
@@ -26,4 +28,9 @@ AutoComplete.args = {
     { label: "Here we have a tomato" },
     { label: "Carrot" },
   ],
+};
+
+export const AutoCompleteAsyncFetch = Template.bind({});
+AutoCompleteAsyncFetch.args = {
+  filter: async (search: string) => remoteSearchMovies(search),
 };
