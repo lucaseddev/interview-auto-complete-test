@@ -1,5 +1,5 @@
-import { TextInput, TextInputProps } from "components";
-import useDebounceEffect from "hooks/useDebounceEffect";
+import { TextInput, TextInputProps } from "lib/components";
+import useDebounceEffect from "lib/hooks/useDebounceEffect";
 import React, { useEffect, useRef, useState } from "react";
 
 import "./AutoComplete.styles.scss";
@@ -12,14 +12,14 @@ export interface AutoCompleteProps extends TextInputProps {
 
 export type AutoCompleteSearchCallback = (
   inputText: string,
-  options: AutoCompleteOption[]
+  options?: AutoCompleteOption[]
 ) => Promise<AutoCompleteOption[]>;
 
 const defaultFilter: AutoCompleteSearchCallback = (inputText, options) => {
   return Promise.resolve(
-    options.filter((option) =>
+    options?.filter((option) =>
       option.label.toLowerCase().includes(inputText.toLowerCase())
-    )
+    ) || []
   );
 };
 
@@ -47,9 +47,11 @@ export const AutoComplete: React.FC<AutoCompleteProps> = ({
 
   useDebounceEffect(
     () => {
+      if (isLoading) return;
+      
       setIsLoading(true);
 
-      !isLoading && filter(inputText, options)
+      filter(inputText, options)
         .then((result) => {
           setControlledOptions(result);
           setIsLoading(false);

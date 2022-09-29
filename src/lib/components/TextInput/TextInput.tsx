@@ -1,5 +1,5 @@
 import React from "react";
-import { Spinner } from "components";
+import { Spinner } from "lib/components";
 
 import "./TextInput.styles.scss";
 
