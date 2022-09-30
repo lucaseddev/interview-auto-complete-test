@@ -34,13 +34,17 @@
       word-wrap: break-word;
       overflow: hidden;
 
-      &:hover:not([data-selected="true"]) {
+      &:hover:not([data-selected="true"]),
+      &:focus-visible:not([data-selected="true"]) {
         background: $hoverDefault;
+        outline: none;
       }
 
       &:not(:hover)[data-selected="true"],
-      &:hover[data-selected="true"] {
+      &:hover[data-selected="true"],
+      &:focus-visible[data-selected="true"] {
         background: $underPrimary;
+        outline: none;
       }
     }
 
