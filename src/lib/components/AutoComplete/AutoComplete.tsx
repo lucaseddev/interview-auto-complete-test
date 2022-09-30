@@ -1,7 +1,7 @@
 import { TextInput, TextInputProps, TextHighlight } from "lib/components";
 import { useDebounceEffect } from "lib/hooks";
 import { TOnFilterListAsync, TOnSelected } from "lib/types";
-import React, { useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import "./AutoComplete.styles.scss";
 import { AutoCompleteOption } from "./AutoComplete.types";
@@ -20,6 +20,9 @@ const defaultFilter = (inputText: string, options: AutoCompleteOption[]) => {
   );
 };
 
+const FIXED_ITEM_HEIGHT = 32;
+const FIXED_LIST_HEIGHT = 192;
+
 export const AutoComplete: React.FC<AutoCompleteProps> = ({
   options = [],
   filter = defaultFilter,
@@ -31,6 +34,7 @@ export const AutoComplete: React.FC<AutoCompleteProps> = ({
     AutoCompleteOption[]
   >([]);
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const [listRef, setListRef] = useState<HTMLUListElement | null>(null);
 
   const [selected, setSelected] = useState<AutoCompleteOption | null>(null);
 
@@ -57,22 +61,80 @@ export const AutoComplete: React.FC<AutoCompleteProps> = ({
     [inputText]
   );
 
-  const handleSelectOption = (option: AutoCompleteOption) => {
+  const handleOpen = () => {
+    setIsOpen(true);
+    if (!selected) {
+      setFocus(0);
+    }
+  };
+
+  const handleClose = () => {
+    if (!isHoverDropdown.current) {
+      setIsOpen(false);
+    }
+  };
+
+  const handleSelectOption = (option: AutoCompleteOption, focusIndex: number) => {
     setSelected(option);
     setInputText(option.label);
     setIsOpen(false);
+    setFocus(focusIndex);
+    isHoverDropdown.current = false;
   };
 
   const handleInputChange = (input: string) => {
     setInputText(input);
     setSelected(null);
+    handleOpen();
   };
 
+  const handleScrollToFocus = (index: number) => {
+    const fixedListHalf = FIXED_LIST_HEIGHT / 2 - FIXED_ITEM_HEIGHT / 2 - 4;
+    const positionFromTop = index * FIXED_ITEM_HEIGHT - fixedListHalf;
+    listRef?.scrollTo({ top: positionFromTop });
+  };
+
+  /** This is not the best accecibility approach to make it possible for going through a List
+   *  because there is no tabIndex ordering happening and therefore the actual list item doesn't hold any focus
+   *  But to keep it short, since i don't have much time, this is still a user friendly working example
+   * */
+  const [focus, setFocus] = useState<number>(-1);
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === "ArrowDown" && focus < controlledOptions.length) {
+        e.preventDefault();
+        setFocus(focus + 1);
+
+        handleScrollToFocus(focus + 1);
+      } else if (e.key === "ArrowUp" && focus >= 0) {
+        e.preventDefault();
+        setFocus(focus - 1);
+
+        handleScrollToFocus(focus - 1);
+      } else if (
+        (e.key === "Tab" || e.key === "Enter") &&
+        focus >= 0 &&
+        focus < controlledOptions.length
+      ) {
+        handleSelectOption(controlledOptions[focus], focus);
+      }
+    },
+    [controlledOptions, focus, setFocus]
+  );
+
+  useEffect(() => {
+    handleScrollToFocus(focus);
+  }, [listRef])
+
   return (
-    <div className="deel-AutoComplete" ref={wrapperRef}>
+    <div
+      onKeyDown={handleKeyDown}
+      className="deel-AutoComplete"
+      ref={wrapperRef}
+    >
       <TextInput
-        onFocus={() => setIsOpen(true)}
-        onBlur={() => !isHoverDropdown.current && setIsOpen(false)}
+        onFocus={handleOpen}
+        onBlur={handleClose}
         onChange={(e) => handleInputChange(e.target.value)}
         value={inputText}
         isLoading={isLoading}
@@ -80,10 +142,12 @@ export const AutoComplete: React.FC<AutoCompleteProps> = ({
 
       {isOpen && (
         <ul
+          ref={setListRef}
           onMouseEnter={() => (isHoverDropdown.current = true)}
           onMouseLeave={() => (isHoverDropdown.current = false)}
           style={{
             width: wrapperRef.current?.offsetWidth || "auto",
+            maxHeight: FIXED_LIST_HEIGHT,
           }}
         >
           {/* A better approach here would be a virtual list, removing and adding DOM items
@@ -93,10 +157,12 @@ export const AutoComplete: React.FC<AutoCompleteProps> = ({
            * So since i'm not allowed to use any third party libs, this is enough for this case.
            */}
           {(controlledOptions.length &&
-            controlledOptions.map((option) => (
+            controlledOptions.map((option, index) => (
               <li
+                style={{ height: FIXED_ITEM_HEIGHT }}
+                data-focus={index === focus}
                 data-selected={option.label === selected?.label}
-                onClick={() => handleSelectOption(option)}
+                onClick={() => handleSelectOption(option, index)}
                 key={option.label}
               >
                 <TextHighlight
