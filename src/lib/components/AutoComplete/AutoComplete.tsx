@@ -42,7 +42,9 @@ export const AutoComplete: React.FC<AutoCompleteProps> = ({
 
       setIsLoading(true);
 
-      filter(inputText, options)
+      const input = selected ? "" : inputText;
+
+      filter(input, options)
         .then((result) => {
           setControlledOptions(result);
           setIsLoading(false);
@@ -97,7 +99,10 @@ export const AutoComplete: React.FC<AutoCompleteProps> = ({
                 onClick={() => handleSelectOption(option)}
                 key={option.label}
               >
-                <TextHighlight text={option.label} highlight={inputText || ''} />
+                <TextHighlight
+                  text={option.label}
+                  highlight={inputText || ""}
+                />
               </li>
             ))) || <li data-nooption>No options</li>}
         </ul>
