@@ -6,10 +6,10 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import "./AutoComplete.styles.scss";
 import { AutoCompleteOption } from "./AutoComplete.types";
 
-export interface AutoCompleteProps extends TextInputProps {
+export interface AutoCompleteProps extends Omit<TextInputProps, 'isLoading'> {
   options: AutoCompleteOption[];
   filter: TOnFilterListAsync<string, AutoCompleteOption>;
-  onSelected: TOnSelected<AutoCompleteOption>;
+  onSelected: TOnSelected<AutoCompleteOption | null>;
 }
 
 const defaultFilter = (inputText: string, options: AutoCompleteOption[]) => {
@@ -26,6 +26,8 @@ const FIXED_LIST_HEIGHT = 192;
 export const AutoComplete: React.FC<AutoCompleteProps> = ({
   options = [],
   filter = defaultFilter,
+  onSelected,
+  ...rest
 }) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [inputText, setInputText] = useState<string>("");
@@ -80,12 +82,14 @@ export const AutoComplete: React.FC<AutoCompleteProps> = ({
     setIsOpen(false);
     setFocus(focusIndex);
     isHoverDropdown.current = false;
+    onSelected(option);
   };
 
   const handleInputChange = (input: string) => {
     setInputText(input);
     setSelected(null);
     handleOpen();
+    onSelected(null);
   };
 
   const handleScrollToFocus = (index: number) => {
@@ -138,6 +142,7 @@ export const AutoComplete: React.FC<AutoCompleteProps> = ({
         onChange={(e) => handleInputChange(e.target.value)}
         value={inputText}
         isLoading={isLoading}
+        {...rest}
       />
 
       {isOpen && (
