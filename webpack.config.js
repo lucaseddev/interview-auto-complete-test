@@ -1,7 +1,5 @@
 const path = require("path");
 
-const { CleanWebpackPlugin } = require("clean-webpack-plugin");
-
 module.exports = {
   mode: "development",
   entry: "./src/app/main/index.tsx",
@@ -42,9 +40,9 @@ module.exports = {
       overlay: true,
       progress: true,
     },
-    devMiddleware: {
-      writeToDisk: true,
-    },
+    // devMiddleware: {
+    //   writeToDisk: true,
+    // },
   },
   externals: {
     react: "React",
