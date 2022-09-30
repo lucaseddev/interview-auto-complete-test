@@ -20,7 +20,13 @@
     "allowSyntheticDefaultImports": true,
     "baseUrl": "src"
   },
-  "include": ["src", "src/lib/**/*.ts", "src/app/**/*.tsx"],
+  "include": [
+    "src",
+    "src/lib/**/*.ts",
+    "src/lib/**/*.*.ts",
+    "src/app/**/*.tsx",
+    "src/app/**/*.*.tsx"
+  ],
   "exclude": [
     "node_modules",
     "lib",
