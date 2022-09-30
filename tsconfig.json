@@ -22,10 +22,9 @@
   },
   "include": [
     "src",
+    "src/utils",
     "src/lib/**/*.ts",
-    "src/lib/**/*.*.ts",
     "src/app/**/*.tsx",
-    "src/app/**/*.*.tsx"
   ],
   "exclude": [
     "node_modules",

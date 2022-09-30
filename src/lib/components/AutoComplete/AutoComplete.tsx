@@ -3,13 +3,13 @@ import { useDebounceEffect } from "lib/hooks";
 import { TOnFilterListAsync, TOnSelected } from "lib/types";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
-import "./AutoComplete.styles.scss";
-import { AutoCompleteOption } from "./AutoComplete.types";
+import "./AutoComplete-styles.scss";
+import { AutoCompleteOption } from "./AutoComplete-types";
 
 export interface AutoCompleteProps extends Omit<TextInputProps, 'isLoading'> {
-  options: AutoCompleteOption[];
+  options?: AutoCompleteOption[];
   filter: TOnFilterListAsync<string, AutoCompleteOption>;
-  onSelected: TOnSelected<AutoCompleteOption | null>;
+  onSelected?: TOnSelected<AutoCompleteOption | null>;
 }
 
 const defaultFilter = (inputText: string, options: AutoCompleteOption[]) => {
@@ -82,14 +82,14 @@ export const AutoComplete: React.FC<AutoCompleteProps> = ({
     setIsOpen(false);
     setFocus(focusIndex);
     isHoverDropdown.current = false;
-    onSelected(option);
+    onSelected?.(option);
   };
 
   const handleInputChange = (input: string) => {
     setInputText(input);
     setSelected(null);
     handleOpen();
-    onSelected(null);
+    onSelected?.(null);
   };
 
   const handleScrollToFocus = (index: number) => {

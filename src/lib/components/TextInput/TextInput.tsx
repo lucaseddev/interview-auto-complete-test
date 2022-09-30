@@ -1,7 +1,7 @@
 import React from "react";
 import { Spinner } from "lib/components";
 
-import "./TextInput.styles.scss";
+import "./TextInput-styles.scss";
 
 export interface TextInputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
