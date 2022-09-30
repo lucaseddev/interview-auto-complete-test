@@ -34,12 +34,12 @@
       word-wrap: break-word;
       overflow: hidden;
 
-      &[data-hover="true"][data-selected="false"] {
+      &:hover:not([data-selected="true"]) {
         background: $hoverDefault;
       }
 
-      &[data-hover="false"][data-selected="true"],
-      &[data-hover="true"][data-selected="true"] {
+      &:not(:hover)[data-selected="true"],
+      &:hover[data-selected="true"] {
         background: $underPrimary;
       }
     }
@@ -49,6 +49,10 @@
       align-items: center;
       justify-content: center;
       color: $defaultStroke;
+
+      &:hover {
+        background: inherit;
+      }
     }
 
     &:focus-visible {

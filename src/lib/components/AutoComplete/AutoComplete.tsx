@@ -1,21 +1,18 @@
 import { TextInput, TextInputProps } from "lib/components";
-import useDebounceEffect from "lib/hooks/useDebounceEffect";
-import React, { useEffect, useRef, useState } from "react";
+import { useDebounceEffect } from "lib/hooks";
+import { TOnFilterListAsync, TOnSelected } from "lib/types";
+import React, { useRef, useState } from "react";
 
 import "./AutoComplete.styles.scss";
 import { AutoCompleteOption } from "./AutoComplete.types";
 
 export interface AutoCompleteProps extends TextInputProps {
   options: AutoCompleteOption[];
-  filter: AutoCompleteSearchCallback;
+  filter: TOnFilterListAsync<string, AutoCompleteOption>;
+  onSelected: TOnSelected<AutoCompleteOption>;
 }
 
-export type AutoCompleteSearchCallback = (
-  inputText: string,
-  options?: AutoCompleteOption[]
-) => Promise<AutoCompleteOption[]>;
-
-const defaultFilter: AutoCompleteSearchCallback = (inputText, options) => {
+const defaultFilter = (inputText: string, options: AutoCompleteOption[]) => {
   return Promise.resolve(
     options?.filter((option) =>
       option.label.toLowerCase().includes(inputText.toLowerCase())
@@ -30,25 +27,19 @@ export const AutoComplete: React.FC<AutoCompleteProps> = ({
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [inputText, setInputText] = useState<string>("");
   const [isOpen, setIsOpen] = useState<boolean>();
-  const [dropdownWidth, setDropdownWidth] = useState<number>();
   const [controlledOptions, setControlledOptions] = useState<
     AutoCompleteOption[]
   >([]);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (
-      wrapperRef.current &&
-      wrapperRef.current.offsetWidth !== dropdownWidth
-    ) {
-      setDropdownWidth(wrapperRef.current.offsetWidth);
-    }
-  }, [wrapperRef.current]);
+  const [selected, setSelected] = useState<AutoCompleteOption | null>(null);
+
+  const isHoverDropdown = useRef<boolean>(false);
 
   useDebounceEffect(
     () => {
       if (isLoading) return;
-      
+
       setIsLoading(true);
 
       filter(inputText, options)
@@ -64,24 +55,50 @@ export const AutoComplete: React.FC<AutoCompleteProps> = ({
     [inputText]
   );
 
+  const handleSelectOption = (option: AutoCompleteOption) => {
+    setSelected(option);
+    setInputText(option.label);
+    setIsOpen(false);
+  };
+
+  const handleInputChange = (input: string) => {
+    setInputText(input);
+    setSelected(null);
+  };
+
   return (
     <div className="deel-AutoComplete" ref={wrapperRef}>
       <TextInput
         onFocus={() => setIsOpen(true)}
-        onBlur={() => setIsOpen(false)}
-        onChange={(e) => setInputText(e.target.value)}
+        onBlur={() => !isHoverDropdown.current && setIsOpen(false)}
+        onChange={(e) => handleInputChange(e.target.value)}
+        value={inputText}
         isLoading={isLoading}
       />
 
       {isOpen && (
         <ul
+          onMouseEnter={() => (isHoverDropdown.current = true)}
+          onMouseLeave={() => (isHoverDropdown.current = false)}
           style={{
-            width: dropdownWidth || "auto",
+            width: wrapperRef.current?.offsetWidth || "auto",
           }}
-        >
+        >       
+        {/* A better approach here would be a virtual list, removing and adding DOM items 
+          * wether if they are visible or not, to handle large amounts of data. I didn't wanted to go too deep and
+          * re-invent the wheel creating a list virtualizer.
+          * 
+          * So since i'm not allowed to use any third party libs, this is enough for this case.
+        */}
           {(controlledOptions.length &&
             controlledOptions.map((option) => (
-              <li key={option.label}>{option.label}</li>
+              <li
+                data-selected={option.label === selected?.label}
+                onClick={() => handleSelectOption(option)}
+                key={option.label}
+              >
+                {option.label}
+              </li>
             ))) || <li data-nooption>No options</li>}
         </ul>
       )}
