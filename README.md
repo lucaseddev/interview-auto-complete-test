@@ -42,7 +42,7 @@ yarn build:app
 
 ## Building the lib
 ```bash
-yarn build:app
+yarn build:lib
 # npm run build:lib
 ```
 
