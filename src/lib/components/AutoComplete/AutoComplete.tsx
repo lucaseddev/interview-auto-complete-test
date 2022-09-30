@@ -1,4 +1,4 @@
-import { TextInput, TextInputProps } from "lib/components";
+import { TextInput, TextInputProps, TextHighlight } from "lib/components";
 import { useDebounceEffect } from "lib/hooks";
 import { TOnFilterListAsync, TOnSelected } from "lib/types";
 import React, { useRef, useState } from "react";
@@ -83,13 +83,13 @@ export const AutoComplete: React.FC<AutoCompleteProps> = ({
           style={{
             width: wrapperRef.current?.offsetWidth || "auto",
           }}
-        >       
-        {/* A better approach here would be a virtual list, removing and adding DOM items 
-          * wether if they are visible or not, to handle large amounts of data. I didn't wanted to go too deep and
-          * re-invent the wheel creating a list virtualizer.
-          * 
-          * So since i'm not allowed to use any third party libs, this is enough for this case.
-        */}
+        >
+          {/* A better approach here would be a virtual list, removing and adding DOM items
+           * wether if they are visible or not, to handle large amounts of data. I didn't wanted to go too deep and
+           * re-invent the wheel creating a list virtualizer.
+           *
+           * So since i'm not allowed to use any third party libs, this is enough for this case.
+           */}
           {(controlledOptions.length &&
             controlledOptions.map((option) => (
               <li
@@ -97,7 +97,7 @@ export const AutoComplete: React.FC<AutoCompleteProps> = ({
                 onClick={() => handleSelectOption(option)}
                 key={option.label}
               >
-                {option.label}
+                <TextHighlight text={option.label} highlight={inputText || ''} />
               </li>
             ))) || <li data-nooption>No options</li>}
         </ul>
