@@ -6,6 +6,8 @@ Another approach would be to use a few libraries that are more battle tested for
 
 It was a very good challenge!
 
+## [2 Test questions](https://github.com/lucaseddev/interview-auto-complete-test/blob/68c01944d7087d34a4d5bedc662d61c16e1cbd0b/QUESTIONS.MD)
+
 # How to run it
 
 I have built the project for both generating a library using rollup and starting a simple server with webpack.
