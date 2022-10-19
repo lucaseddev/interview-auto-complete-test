@@ -40,9 +40,9 @@ module.exports = {
       overlay: true,
       progress: true,
     },
-    // devMiddleware: {
-    //   writeToDisk: true,
-    // },
+    devMiddleware: {
+      writeToDisk: true,
+    },
   },
   externals: {
     react: "React",
